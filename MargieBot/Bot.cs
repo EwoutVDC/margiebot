@@ -215,6 +215,9 @@ namespace MargieBot
                 }
 
                 string messageText = (jObject["text"] != null ? jObject["text"].Value<string>() : null);
+                string timestampText = (jObject["ts"] != null ? jObject["ts"].Value<string>() : null);
+                if (timestampText.IndexOf('.') > 0)
+                    timestampText = timestampText.Substring(0, timestampText.IndexOf('.'));
                 // check to see if bot has been mentioned
                 SlackMessage message = new SlackMessage() {
                     ChatHub = hub,
@@ -222,7 +225,8 @@ namespace MargieBot
                     RawData = json,
                     // some messages may not have text or a user (like unfurled data from URLs)
                     Text = messageText,
-                    User = (jObject["user"] != null ? new SlackUser() { ID = jObject["user"].Value<string>() } : null)
+                    User = (jObject["user"] != null ? new SlackUser() { ID = jObject["user"].Value<string>() } : null),
+                    TimeStamp = (timestampText != null ? DateTimeOffset.FromUnixTimeSeconds(Convert.ToInt64(timestampText)).DateTime : DateTime.Now)
                 };
 
                 ResponseContext context = new ResponseContext() {
