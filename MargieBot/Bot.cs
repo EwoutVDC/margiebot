@@ -12,6 +12,7 @@ using MargieBot.Utilities;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using WebSocketSharp;
+using Epoch.Extensions;
 
 namespace MargieBot
 {
@@ -226,7 +227,7 @@ namespace MargieBot
                     // some messages may not have text or a user (like unfurled data from URLs)
                     Text = messageText,
                     User = (jObject["user"] != null ? new SlackUser() { ID = jObject["user"].Value<string>() } : null),
-                    TimeStamp = (timestampText != null ? DateTimeOffset.FromUnixTimeSeconds(Convert.ToInt64(timestampText)).DateTime : DateTime.Now)
+                    TimeStamp = (timestampText != null ? Convert.ToInt32(timestampText).FromUnix()  : DateTime.Now)
                 };
 
                 ResponseContext context = new ResponseContext() {
@@ -255,6 +256,7 @@ namespace MargieBot
                     }
                 }
             }
+            //TODO: MargieBot doesn't listen to message edits by default. We need this for logging purposes
 
             RaiseMessageReceived(json);
         }
